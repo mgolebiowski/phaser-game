@@ -12,7 +12,7 @@ var config = {
   },
 };
 
-var snake;
+var car;
 var cursors;
 
 //  Direction consts
@@ -24,19 +24,19 @@ var RIGHT = 3;
 var game = new Phaser.Game(config);
 
 function preload() {
-  this.load.image("food", "assets/games/snake/food.png");
-  this.load.image("body", "assets/games/snake/body.png");
+  this.load.setBaseURL("http://labs.phaser.io");
+
+  this.load.image("body", "assets/sprites/car.png");
 }
 
 function create() {
-  var Snake = new Phaser.Class({
-    initialize: function Snake(scene, x, y) {
+  var Car = new Phaser.Class({
+    initialize: function Car(scene, x, y) {
       this.headPosition = new Phaser.Geom.Point(x, y);
 
       this.body = scene.add.group();
 
-      this.head = this.body.create(x * 16, y * 16, "body");
-      this.head.setOrigin(0);
+      this.head = this.body.create(x, y, "body");
 
       this.alive = true;
 
@@ -44,8 +44,8 @@ function create() {
 
       this.moveTime = 0;
 
-      this.heading = RIGHT;
-      this.direction = RIGHT;
+      this.heading = UP;
+      this.direction = UP;
     },
 
     update: function (time) {
@@ -56,36 +56,33 @@ function create() {
 
     faceLeft: function () {
       if (this.direction === UP || this.direction === DOWN) {
+        this.head.rotation = 1.5*Math.PI;
         this.heading = LEFT;
       }
     },
 
     faceRight: function () {
       if (this.direction === UP || this.direction === DOWN) {
+        this.head.rotation = 0.5*Math.PI;
         this.heading = RIGHT;
       }
     },
 
     faceUp: function () {
       if (this.direction === LEFT || this.direction === RIGHT) {
+        this.head.rotation = 2*Math.PI;
         this.heading = UP;
       }
     },
 
     faceDown: function () {
       if (this.direction === LEFT || this.direction === RIGHT) {
+        this.head.rotation = 1*Math.PI;
         this.heading = DOWN;
       }
     },
 
     move: function (time) {
-      /**
-       * Based on the heading property (which is the direction the pgroup pressed)
-       * we update the headPosition value accordingly.
-       *
-       * The Math.wrap call allow the snake to wrap around the screen, so when
-       * it goes off any of the sides it re-appears on the other.
-       */
       switch (this.heading) {
         case LEFT:
           this.headPosition.x = Phaser.Math.Wrap(
@@ -137,33 +134,22 @@ function create() {
     },
   });
 
-  snake = new Snake(this, 8, 8);
+  car = new Car(this, 8, 8);
 
   //  Create our keyboard controls
   cursors = this.input.keyboard.createCursorKeys();
 }
 
-function update(time, delta) {
-  if (!snake.alive) {
-    return;
-  }
-
-  /**
-   * Check which key is pressed, and then change the direction the snake
-   * is heading based on that. The checks ensure you don't double-back
-   * on yourself, for example if you're moving to the right and you press
-   * the LEFT cursor, it ignores it, because the only valid directions you
-   * can move in at that time is up and down.
-   */
+function update(time) {
   if (cursors.left.isDown) {
-    snake.faceLeft();
+    car.faceLeft();
   } else if (cursors.right.isDown) {
-    snake.faceRight();
+    car.faceRight();
   } else if (cursors.up.isDown) {
-    snake.faceUp();
+    car.faceUp();
   } else if (cursors.down.isDown) {
-    snake.faceDown();
+    car.faceDown();
   }
 
-  snake.update(time);
+  car.update(time);
 }
